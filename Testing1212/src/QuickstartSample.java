@@ -6,7 +6,12 @@ import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
 import com.google.cloud.vision.v1.Image;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.LocalizedObjectAnnotation;
 import com.google.protobuf.ByteString;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +21,7 @@ import java.util.List;
 public class QuickstartSample {
   public static void main(String... args) throws Exception {
     // Instantiates a client
-    try (ImageAnnotatorClient vision = ImageAnnotatorClient.create()) {
+   /* try (ImageAnnotatorClient vision = ImageAnnotatorClient.create()) {
 
       // The path to the image file to annotate
       String fileName = "C:\\Users\\Madis\\Desktop\\Scratch_.png";
@@ -51,6 +56,46 @@ public class QuickstartSample {
               System.out.printf("%s : %s\n", k, v.toString()));
         }
       }
-    }
+      
+      
+    }*/
+	  PrintStream out = new PrintStream("output2.txt");
+	  String fileName = "C:\\Users\\Madis\\Desktop\\veg.jpg";
+	  detectLocalizedObjects(fileName, out);
+	  
   }
+  
+  public static void detectLocalizedObjects(String filePath, PrintStream out)
+		    throws Exception, IOException {
+		  List<AnnotateImageRequest> requests = new ArrayList<>();
+
+		  ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+
+		  Image img = Image.newBuilder().setContent(imgBytes).build();
+		  AnnotateImageRequest request =
+		      AnnotateImageRequest.newBuilder()
+		          .addFeatures(Feature.newBuilder().setType(Type.OBJECT_LOCALIZATION))
+		          .setImage(img)
+		          .build();
+		  requests.add(request);
+
+		  // Perform the request
+		  try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
+		    BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+		    List<AnnotateImageResponse> responses = response.getResponsesList();
+
+		    // Display the results
+		    for (AnnotateImageResponse res : responses) {
+		      for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
+		        out.format("Object name: %s\n", entity.getName());
+		        out.format("Confidence: %s\n", entity.getScore());
+		        out.format("Normalized Vertices:\n");
+		        entity
+		            .getBoundingPoly()
+		            .getNormalizedVerticesList()
+		            .forEach(vertex -> out.format("- (%s, %s)\n", vertex.getX(), vertex.getY()));
+		      }
+		    }
+		  }
+		}
 }
