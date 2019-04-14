@@ -59,13 +59,51 @@ public class QuickstartSample {
       
       
     }*/
-	  PrintStream out = new PrintStream("output2.txt");
-	  String fileName = "C:\\Users\\Madis\\Desktop\\veg.jpg";
-	  detectLocalizedObjects(fileName, out);
+	 // PrintStream out = new PrintStream("output2.txt");
+	 // String fileName = "C:\\Users\\Madis\\Desktop\\veg.jpg";
+	  //detectLocalizedObjects(fileName);
+	  
+	  
+	  String mural = "C:\\Users\\Madis\\Documents\\GitHub\\Pineapple2\\Testing1212\\src\\mixed-fruits.jpg"; //mural file location
+	  ArrayList<String> images = new ArrayList<String>();
+	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\apple.jpg");
+	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\grape.jpg");
+	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\lemon.jpg");
+	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\orange.jpg");
+	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\strawberry.jpg");
+	  ArrayList<String> muralResponses = detectLocalizedObjects(mural);
+	  
+	  
+	  for(String image:images)
+	  {
+		ArrayList<String> imageResponses =   detectLocalizedObjects(image);
+		
+		for(int i = 0; i<imageResponses.size(); i++ )
+		{
+			boolean b = false;
+			String s = "";
+			for(int j = 0; j< muralResponses.size(); j++)
+			{
+				if(imageResponses.get(i).equals(muralResponses.get(j)))
+					{
+						b = true;
+						s = imageResponses.get(i);
+					}
+			}
+			
+			if(b == true)
+				System.out.println("The image exists in the mural as "+ s);
+			else
+				System.out.println("The images DOES NOT exist in the mural");
+		
+		}
+	  }
+	  
+	  
 	  
   }
   
-  public static void detectLocalizedObjects(String filePath, PrintStream out)
+  public static ArrayList<String> detectLocalizedObjects(String filePath)
 		    throws Exception, IOException {
 		  List<AnnotateImageRequest> requests = new ArrayList<>();
 
@@ -85,7 +123,7 @@ public class QuickstartSample {
 		    List<AnnotateImageResponse> responses = response.getResponsesList();
 
 		    // Display the results
-		    for (AnnotateImageResponse res : responses) {
+		   /* for (AnnotateImageResponse res : responses) {
 		      for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) {
 		        out.format("Object name: %s\n", entity.getName());
 		        out.format("Confidence: %s\n", entity.getScore());
@@ -94,8 +132,19 @@ public class QuickstartSample {
 		            .getBoundingPoly()
 		            .getNormalizedVerticesList()
 		            .forEach(vertex -> out.format("- (%s, %s)\n", vertex.getX(), vertex.getY()));
-		      }
-		    }
+		    
+		      }*/
+		    
+		    ArrayList<String> names = new ArrayList<String>();
+		    for (AnnotateImageResponse res : responses) 
+		    {
+			      for (LocalizedObjectAnnotation entity : res.getLocalizedObjectAnnotationsList()) 
+			      {
+			        names.add(entity.getName());
+			      }
+			}
+		    
+		    return names;
 		  }
 		}
 }
