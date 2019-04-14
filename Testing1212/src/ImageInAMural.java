@@ -1,83 +1,51 @@
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
 import com.google.cloud.vision.v1.Image;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.LocalizedObjectAnnotation;
 import com.google.protobuf.ByteString;
-
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuickstartSample {
+public class ImageInAMural {
   public static void main(String... args) throws Exception {
-    // Instantiates a client
-   /* try (ImageAnnotatorClient vision = ImageAnnotatorClient.create()) {
-
-      // The path to the image file to annotate
-      String fileName = "C:\\Users\\Madis\\Desktop\\Scratch_.png";
-
-      // Reads the image file into memory
-      Path path = Paths.get(fileName);
-      byte[] data = Files.readAllBytes(path);
-      ByteString imgBytes = ByteString.copyFrom(data);
-
-      // Builds the image annotation request
-      List<AnnotateImageRequest> requests = new ArrayList<>();
-      Image img = Image.newBuilder().setContent(imgBytes).build();
-      Feature feat = Feature.newBuilder().setType(Type.LABEL_DETECTION).build();
-      AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
-          .addFeatures(feat)
-          .setImage(img)
-          .build();
-      requests.add(request);
-
-      // Performs label detection on the image file
-      BatchAnnotateImagesResponse response = vision.batchAnnotateImages(requests);
-      List<AnnotateImageResponse> responses = response.getResponsesList();
-
-      for (AnnotateImageResponse res : responses) {
-        if (res.hasError()) {
-          System.out.printf("Error: %s\n", res.getError().getMessage());
-          return;
-        }
-
-        for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-          annotation.getAllFields().forEach((k, v) ->
-              System.out.printf("%s : %s\n", k, v.toString()));
-        }
-      }
-      
-      
-    }*/
+    
+	  //example printouts for json-files of detecting multiple images.
 	 // PrintStream out = new PrintStream("output2.txt");
 	 // String fileName = "C:\\Users\\Madis\\Desktop\\veg.jpg";
 	  //detectLocalizedObjects(fileName);
 	  
+	  /*Getting the mural file location*/
+	  String mural = "C:\\Users\\Madis\\Documents\\GitHub\\Pineapple2\\Testing1212\\src\\mixed-fruits.jpg"; 
 	  
-	  String mural = "C:\\Users\\Madis\\Documents\\GitHub\\Pineapple2\\Testing1212\\src\\mixed-fruits.jpg"; //mural file location
+	  /*Getting the images that someone takes to compare to the mural, In the future this would be continuous or in a while loop, 
+	   * but for now adding them in manually */
 	  ArrayList<String> images = new ArrayList<String>();
+	  
 	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\apple.jpg");
 	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\grape.jpg");
 	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\lemon.jpg");
 	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\orange.jpg");
 	  images.add("C:\\\\Users\\\\Madis\\\\Documents\\\\GitHub\\\\Pineapple2\\\\Testing1212\\\\src\\\\strawberry.jpg");
+	  
+	  /*getting the known objects in the mural*/
 	  ArrayList<String> muralResponses = detectLocalizedObjects(mural);
 	  
+	  int count = 1;
 	  
+	  //comparing the current image to the mural
 	  for(String image:images)
 	  {
+		  System.out.println("Image " + count + ":");
+		 // gets all known objects in current image
 		ArrayList<String> imageResponses =   detectLocalizedObjects(image);
 		
+		/*compares all known objects in image to all known objects in mural. If it exists, it will print it out along with the name */
 		for(int i = 0; i<imageResponses.size(); i++ )
 		{
 			boolean b = false;
@@ -97,12 +65,14 @@ public class QuickstartSample {
 				System.out.println("The images DOES NOT exist in the mural");
 		
 		}
+		count++;
 	  }
 	  
 	  
 	  
   }
   
+  // this method uses the Google Could Vision AI API; sends a request and gets all the object entity names found using the Vision AI. 
   public static ArrayList<String> detectLocalizedObjects(String filePath)
 		    throws Exception, IOException {
 		  List<AnnotateImageRequest> requests = new ArrayList<>();
@@ -135,6 +105,7 @@ public class QuickstartSample {
 		    
 		      }*/
 		    
+		    /*puts all entity names into an array list to return to main to compare with*/
 		    ArrayList<String> names = new ArrayList<String>();
 		    for (AnnotateImageResponse res : responses) 
 		    {
